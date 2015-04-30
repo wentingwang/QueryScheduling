@@ -13,6 +13,9 @@ class MatchingPlacement(Placement):
      #   Placement.__init__(self)
 
     def assign(self, node_list, block_list):
+         for node in node_list:
+             node.show()
+
          #random assignment
          bipartite = {}
          alreadyLoad_block_list = set()
@@ -141,14 +144,22 @@ class MatchingPlacement(Placement):
 	                 needLoad_block_list.remove(block)
 	             else:
 	                 break
-	 '''                 
-	 print "After dealing with remaining blocks"
+	                 
+	 print "MaxMatching--------"
+         total_inMemory = 0
 	 for k,v in placement.items():
-	     print k.id,":[",
+             inMemory_count = 0
+	     print "id:", k.id,":[",
 	     for block in v:
-	         print block.id, " ",
-	     print "]"
-         '''
+                 if block in k.memory:
+	             print block.id, "* ",
+                     inMemory_count+=1
+                 else:
+                     print block.id, " ",
+	     print "] In Memory Count=", inMemory_count, "Not in Memory Count=", len(v)-inMemory_count
+             total_inMemory += inMemory_count
+         print "for this query: total in Memory:" ,total_inMemory
+         
          return placement
 '''
 #Test

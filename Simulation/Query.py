@@ -4,6 +4,9 @@ import random
 class Comparitor:
     SIZE, RECENCY, PRIORITY, RANDOM = range(4)
 
+class DISTRIBUTION:
+    RANDOM, EXP, ZIPF = range(3)
+
 
 class Query(object):
     def __init__(self, id, dataList, startTime, endTime, size):
@@ -40,18 +43,26 @@ class QueryGenerator(object):
         else:
             return
 
-    def generate(self, sortComparitor):
+    def generate(self, sortComparitor, query_distribution, median):
         #now only support random distribution(startTime first and size then)
         #TODO: implementation other distribution  
         random.seed(1)
         for i in range(self.totalNum):
-            #print random.expovariate(1.0 / medianTaskSize);
-            startTime = random.randrange(len(self.dataBlockPool))
-            if startTime <= 0:
-                i = i - 1
-                continue
-            endTime = startTime - random.randrange(startTime)
-            self.taskList.append(Query(i,self.dataBlockPool[endTime:startTime],startTime,endTime,startTime-endTime))
+            if query_distribution == DISTRIBUTION.RANDOM:
+            	#print random.expovariate(1.0 / medianTaskSize);
+            	startTime = random.randrange(len(self.dataBlockPool))
+            	if startTime <= 0:
+                	i = i - 1
+                	continue
+            	endTime = startTime - random.randrange(startTime)
+            	self.taskList.append(Query(i,self.dataBlockPool[endTime:startTime],startTime,endTime,startTime-endTime))
+	    elif query_distribution == DISTRIBUTION.EXP:
+            	task_duration = int(random.expovariate(1.0 / median))
+		startTime = random.randint(task_duration, len(self.dataBlockPool))
+                endTime = startTime - task_duration
+            	self.taskList.append(Query(i,self.dataBlockPool[endTime:startTime],startTime,endTime, task_duration))
+	    else:
+                break
         self.sort(sortComparitor)
 
     def printAll(self):
@@ -62,11 +73,13 @@ class QueryGenerator(object):
 
 def priority_compare(q1,q2):
     return q1.startTime * q1.size - q2.startTime * q2.size
-'''
-Datagen = DataBlock.DataBlockGenerator(100,1)
+
+Datagen = DataBlock.DataBlockGenerator(1000,1)
 Datagen.generate()
-gen = QueryGenerator(Datagen.dataList, 10,1,1)
+gen = QueryGenerator(Datagen.dataList, 100,1,1)
 comparitor = Comparitor.RECENCY
-#gen.generate(4,comparitor)
-#gen.printAll()
-'''
+distribution = DISTRIBUTION.EXP
+median = 100
+gen.generate(comparitor,distribution, median)
+gen.printAll()
+

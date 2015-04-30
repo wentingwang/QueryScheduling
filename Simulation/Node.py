@@ -8,7 +8,7 @@ class Node(object):
         self.memory = []
         self.currentTime = 0
         self.avail_slot = numSlot
-        self.load_data_time = 1
+        self.load_data_time = 3
         self.dup = 0
 
     def show(self):
